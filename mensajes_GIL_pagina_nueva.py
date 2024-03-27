@@ -193,7 +193,106 @@ mensaje_spain = output.getvalue()
 enviar_mensaje_estadisticas(mensaje_spain)
 
 
-4
+
+
+
+
+# Realizar una solicitud GET a la URL y obtener el contenido HTML
+driver = webdriver.Edge(options=edge_options)
+driver.get('https://futboljobs.com/en/search-football-jobs/')
+
+time.sleep(5)
+html = driver.page_source
+driver.quit()
+
+
+# Crear un objeto BeautifulSoup a partir del contenido HTML
+soup = BeautifulSoup(html, 'html.parser')
+
+# Encontrar todas las ofertas de trabajo en la página
+# ofertas_de_trabajo = soup.find_all('div', {'class': "resdrg"})
+
+ofertas1=soup.find_all('div', {'class': "fjo-main-column fjo-job-link fjo-flex"})
+
+driver = webdriver.Edge(options=edge_options)
+driver.get('https://futboljobs.com/en/search-football-jobs/page/2/')
+
+time.sleep(5)
+html = driver.page_source
+driver.quit()
+soup = BeautifulSoup(html, 'html.parser')
+
+
+PROCNAME = "msedge.exe" # or chromedriver or IEDriverServer
+for proc in psutil.process_iter():
+    # check whether the process name matches
+    if proc.name() == PROCNAME:
+        proc.kill()
+
+ofertas2=soup.find_all('div', {'class': "fjo-main-column fjo-job-link fjo-flex"})
+ofertas=ofertas1 + ofertas2
+
+fecha_actual=format_date(fecha_hoy,"dd MMM yy", locale='en')
+fecha_actual_2=format_date(fecha_hoy,"dd MMM yyyy", locale='en')
+# Convertir el texto a fecha
+#print('OFERTAS '+fecha_actual_2.upper())
+
+# Redirige la salida estándar al objeto StringIO
+output = StringIO()
+sys.stdout = output
+
+print('*VACANCIES '+fecha_actual_2.upper() +'*\n' )
+for oferta in ofertas:
+    titulo = oferta.find('h2', {'class': 'fjo-rolename'}).text.strip()
+    link = oferta.find('h2', {'class': 'fjo-rolename'}).a['href']
+    fecha = oferta.find(class_='fjo-top-meta').text.strip()
+    if(fecha.lower().find("today")):
+            print(titulo)
+            print('👉 ', link +'\n')
+    # titulo = oferta.find('a', {'class': 'asp_res_url'}).text.strip()
+    # link = oferta.find('a', {'class': 'asp_res_url'})['href']
+    # fecha = oferta.find('span', {'class': 'asp_date'}).text.strip()
+    # ubicacion = oferta.find('div', {'class': 'asp_res_text'}).text.strip()
+    # ubicacion = ubicacion.split('|')[-1].strip()
+    # # if(titulo.startswith('🏆')):
+    # #     titulo= titulo[1:].strip()
+    # txt_aux=re.sub(r"[^\w\sÀ-ÖØ-öø-ÿ]", '',ubicacion)
+    # ubicacion = txt_aux.replace(' ', '_')    
+    # if(ubicacion[-1]=='_'):
+    #     ubicacion=ubicacion[0:-1]
+    # ubicacion = ubicacion.replace('USA', 'United_States')
+    # ubicacion = ubicacion.replace('Korea', 'South_Korea')
+    # ubicacion = ubicacion.replace('UAE', 'United_Arab_Emirates')
+
+    # bandera=':'+ ubicacion +': '
+    
+    # if(txt_aux in continente_emoji_ing):
+    #     bandera=f"{continente_emoji_ing[txt_aux] }"
+    
+    # if(fecha_actual==fecha):
+    #     if(ubicacion in continente_emoji_ing):
+    #         print( bandera + titulo) 
+    #     else:
+    #         print(emoji.emojize(bandera, language='en') + titulo)    
+            
+    #     if (ubicacion in spanish_speaking_countries):
+    #         print('👉 ', link+ ' (Spanish)' '\n')
+    #     else:
+    #         print('👉 ', link+ ' (English)' '\n')
+
+        
+        
+
+# Redirige la salida estándar de vuelta a su valor predeterminado
+sys.stdout = sys.__stdout__
+
+# Obtiene todo lo que se ha impreso
+mensaje_ingles = output.getvalue()
+enviar_mensaje_estadisticas(mensaje_ingles)
+
+# Imprime la salida guardada
+# with open('archivo_ingles.txt', mode='a', encoding='utf-8') as archivo:
+#     archivo.write(mensaje_ingles)
 # Imprime la salida guardada
 # with open('archivo_ingles.txt', mode='a', encoding='utf-8') as archivo:
 #     archivo.write(mensaje_ingles)
